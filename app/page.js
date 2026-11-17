@@ -1,6 +1,7 @@
 'use client';
 
 import { useState, useEffect, useMemo } from 'react';
+import initialProducts from '@/data/products.json';
 
 export default function UnifiedNoviqueApp() {
   // Top-level View Mode: 'store' or 'admin'
@@ -23,7 +24,7 @@ export default function UnifiedNoviqueApp() {
   const [socialLoading, setSocialLoading] = useState(null);
 
   // STOREFRONT STATES
-  const [products, setProducts] = useState([]);
+  const [products, setProducts] = useState(initialProducts || []);
   const [loading, setLoading] = useState(true);
   const [activeCategory, setActiveCategory] = useState('all'); // all, men, women, kids, hoodie, gifts
   const [activeSubFilter, setActiveSubFilter] = useState('all');
@@ -114,7 +115,9 @@ export default function UnifiedNoviqueApp() {
       const res = await fetch('/api/products');
       if (res.ok) {
         const data = await res.json();
-        setProducts(data);
+        if (Array.isArray(data) && data.length > 0) {
+          setProducts(data);
+        }
       }
     } catch (e) {
       console.error('Error fetching products:', e);
