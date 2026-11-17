@@ -1,0 +1,58 @@
+[
+  {
+    "id": "user-demo-001",
+    "email": "customer@gmail.com",
+    "password": "customer123",
+    "name": "Customer User",
+    "role": "user",
+    "createdAt": "2026-11-17"
+  },
+  {
+    "id": "user-1794918850579",
+    "email": "rohit@test.com",
+    "password": "rohitpass123",
+    "name": "Rohit Verma",
+    "role": "user",
+    "createdAt": "2026-11-17"
+  },
+  {
+    "id": "user-1794918850773",
+    "email": "gamer_discord@novique.in",
+    "password": "oauth_discord_1794918850772",
+    "name": "DiscordGamer",
+    "role": "user",
+    "createdAt": "2026-11-17"
+  },
+  {
+    "id": "user-1794919456278",
+    "email": "user@gmail.com",
+    "password": "oauth_google_1794919456278",
+    "name": "user",
+    "role": "user",
+    "createdAt": "2026-11-17"
+  },
+  {
+    "id": "user-1794919514630",
+    "email": "facebookuser@example.com",
+    "password": "oauth_facebook_1794919514627",
+    "name": "facebookuser",
+    "role": "user",
+    "createdAt": "2026-11-17"
+  },
+  {
+    "id": "user-1794920430521",
+    "email": "gaurav.m@kalvium.com",
+    "password": "oauth_google_1794920430520",
+    "name": "gaurav.m",
+    "role": "user",
+    "createdAt": "2026-11-17"
+  },
+  {
+    "id": "user-1794921153909",
+    "email": "aman@gmail.com",
+    "password": "amanpassword123",
+    "name": "Aman Kumar",
+    "role": "user",
+    "createdAt": "2026-11-17"
+  }
+]
