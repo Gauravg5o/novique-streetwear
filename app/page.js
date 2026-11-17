@@ -57,6 +57,105 @@ export default function UnifiedNoviqueApp() {
     active: true,
   });
 
+  // CATEGORY METADATA & SMOOTH NAVIGATION
+  const categoryHeaders = {
+    all: {
+      badge: 'Novique Streetwear 2026',
+      title1: 'WEAR THE',
+      title2: 'DROP.',
+      desc: "Hand-picked streetwear, oversized tees & premium winter hoodies. Curated from India's top stores into one seamless destination.",
+    },
+    men: {
+      badge: "Men's Streetwear Drop 2026",
+      title1: "MEN'S",
+      title2: 'COLLECTION.',
+      desc: "Curated graphic tees, oversized fits, polos & winter hoodies hand-picked for men.",
+    },
+    women: {
+      badge: "Women's Streetwear Drop 2026",
+      title1: "WOMEN'S",
+      title2: 'STREET DROP.',
+      desc: 'Crop tees, oversized street fits & pullover hoodies designed to stand out.',
+    },
+    kids: {
+      badge: "Kids' Drip Collection 2026",
+      title1: "KIDS'",
+      title2: 'DRIP STORE.',
+      desc: 'Comfortable, stylish graphic tees and warm hoodies for boys and girls.',
+    },
+    hoodie: {
+      badge: 'Winter Season 2026',
+      title1: 'HOODIE',
+      title2: 'SEASON.',
+      desc: 'Heavyweight pullovers & fleece zip-up hoodies hand-picked from Myntra, Flipkart & Amazon.',
+    },
+  };
+
+  const selectCategory = (catId, autoScroll = true) => {
+    setActiveCategory(catId);
+    setActiveSubFilter('all');
+    setShowWishlistOnly(false);
+    if (autoScroll && typeof window !== 'undefined') {
+      setTimeout(() => {
+        const el = document.getElementById('catalog');
+        if (el) {
+          const y = el.getBoundingClientRect().top + window.pageYOffset - 90;
+          window.scrollTo({ top: Math.max(0, y), behavior: 'smooth' });
+        }
+      }, 60);
+    }
+  };
+
+  const getSubfiltersForCategory = (cat) => {
+    if (cat === 'men') {
+      return [
+        { id: 'all', label: 'All Men' },
+        { id: 'graphic', label: 'Graphic Tees' },
+        { id: 'oversized', label: 'Oversized' },
+        { id: 'plain', label: 'Essential Plain' },
+        { id: 'polo', label: 'Polos' },
+        { id: 'hoodie', label: 'Hoodies' },
+        { id: 'under999', label: '🏷️ Under ₹999' },
+      ];
+    }
+    if (cat === 'women') {
+      return [
+        { id: 'all', label: 'All Women' },
+        { id: 'crop', label: 'Crop Tees' },
+        { id: 'oversized', label: 'Oversized' },
+        { id: 'hoodie', label: 'Hoodies' },
+        { id: 'under999', label: '🏷️ Under ₹999' },
+      ];
+    }
+    if (cat === 'kids') {
+      return [
+        { id: 'all', label: 'All Kids' },
+        { id: 'boys', label: 'Boys' },
+        { id: 'girls', label: 'Girls' },
+        { id: 'hoodie', label: 'Hoodies' },
+        { id: 'under999', label: '🏷️ Under ₹999' },
+      ];
+    }
+    if (cat === 'hoodie') {
+      return [
+        { id: 'all', label: 'All Hoodies' },
+        { id: 'pullover', label: 'Pullover' },
+        { id: 'zipper', label: 'Zip-Up' },
+        { id: 'under999', label: '🏷️ Under ₹999' },
+      ];
+    }
+    return [
+      { id: 'all', label: 'All Styles' },
+      { id: 'graphic', label: 'Graphic Tees' },
+      { id: 'oversized', label: 'Oversized' },
+      { id: 'plain', label: 'Essential Plain' },
+      { id: 'polo', label: 'Polos' },
+      { id: 'zipper', label: 'Zip-Up' },
+      { id: 'pullover', label: 'Pullover' },
+      { id: 'under999', label: '🏷️ Under ₹999' },
+    ];
+  };
+
   // Fetch initial products, current session & local storage
   useEffect(() => {
     document.title = currentView === 'admin' ? 'Novique — Executive Admin Suite' : 'Novique — Wear The Drop';
@@ -416,8 +515,10 @@ export default function UnifiedNoviqueApp() {
 
       if (activeSubFilter !== 'all') {
         if (activeSubFilter === 'under999' && p.price >= 999) return false;
+        if (activeSubFilter === 'hoodie' && p.subCategory !== 'hoodie') return false;
         if (
           activeSubFilter !== 'under999' &&
+          activeSubFilter !== 'hoodie' &&
           p.filter !== activeSubFilter &&
           p.subCategory !== activeSubFilter
         )
@@ -1197,11 +1298,7 @@ export default function UnifiedNoviqueApp() {
             ].map((tab) => (
               <button
                 key={tab.id}
-                onClick={() => {
-                  setActiveCategory(tab.id);
-                  setActiveSubFilter('all');
-                  setShowWishlistOnly(false);
-                }}
+                onClick={() => selectCategory(tab.id)}
                 className={`px-5 py-2 rounded-full text-xs font-bold uppercase tracking-wider transition-all duration-200 ${
                   activeCategory === tab.id && !showWishlistOnly
                     ? 'bg-[#C6FF3D] text-black shadow-md shadow-[#C6FF3D]/20'
@@ -1392,11 +1489,7 @@ export default function UnifiedNoviqueApp() {
           ].map((tab) => (
             <button
               key={tab.id}
-              onClick={() => {
-                setActiveCategory(tab.id);
-                setActiveSubFilter('all');
-                setShowWishlistOnly(false);
-              }}
+              onClick={() => selectCategory(tab.id)}
               className={`whitespace-nowrap px-4 py-1.5 rounded-full text-xs font-bold uppercase tracking-wider transition-all ${
                 activeCategory === tab.id && !showWishlistOnly
                   ? 'bg-[#C6FF3D] text-black'
@@ -1416,29 +1509,39 @@ export default function UnifiedNoviqueApp() {
             <div className="lg:col-span-7 text-center lg:text-left">
               <div className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-white/5 border border-white/10 text-[#C6FF3D] text-xs font-bold uppercase tracking-widest mb-6">
                 <span className="w-2 h-2 rounded-full bg-[#C6FF3D] animate-ping" />
-                Novique Streetwear 2026
+                {(categoryHeaders[activeCategory] || categoryHeaders.all).badge}
               </div>
 
               <h1 className="font-display text-6xl sm:text-7xl md:text-8xl lg:text-9xl tracking-tight text-white uppercase leading-[0.9] mb-6">
-                WEAR THE <br />
+                {(categoryHeaders[activeCategory] || categoryHeaders.all).title1} <br />
                 <span className="text-[#C6FF3D] drop-shadow-[0_0_35px_rgba(198,255,61,0.3)]">
-                  DROP.
+                  {(categoryHeaders[activeCategory] || categoryHeaders.all).title2}
                 </span>
               </h1>
 
               <p className="text-gray-400 text-base sm:text-lg max-w-xl mx-auto lg:mx-0 mb-8 leading-relaxed">
-                Hand-picked streetwear, oversized tees &amp; premium winter hoodies. Curated from India's top stores into one seamless destination.
+                {(categoryHeaders[activeCategory] || categoryHeaders.all).desc}
               </p>
 
               <div className="flex flex-wrap gap-4 justify-center lg:justify-start">
                 <button
-                  onClick={() => { setActiveCategory('hoodie'); setActiveSubFilter('all'); }}
+                  onClick={() => selectCategory('hoodie')}
                   className="bg-[#C6FF3D] text-black font-extrabold px-8 py-4 rounded-full text-xs uppercase tracking-widest hover:bg-[#d8ff6b] hover:scale-105 transition-all shadow-xl shadow-[#C6FF3D]/25"
                 >
                   Shop Hoodies 🧥
                 </button>
                 <button
-                  onClick={() => { setActiveCategory('all'); setActiveSubFilter('oversized'); }}
+                  onClick={() => {
+                    setActiveCategory('all');
+                    setActiveSubFilter('oversized');
+                    setTimeout(() => {
+                      const el = document.getElementById('catalog');
+                      if (el) {
+                        const y = el.getBoundingClientRect().top + window.pageYOffset - 90;
+                        window.scrollTo({ top: Math.max(0, y), behavior: 'smooth' });
+                      }
+                    }, 60);
+                  }}
                   className="bg-white/10 text-white font-extrabold px-8 py-4 rounded-full text-xs uppercase tracking-widest border border-white/20 hover:bg-white/20 hover:scale-105 transition-all"
                 >
                   Oversized Fits ⚡
@@ -1476,27 +1579,43 @@ export default function UnifiedNoviqueApp() {
       )}
 
       {/* MAIN CATALOG GRID */}
-      <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
+      <main id="catalog" className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
+        {activeCategory !== 'gifts' && (
+          <div className="mb-6 flex flex-col md:flex-row md:items-center justify-between gap-4 border-b border-white/10 pb-6">
+            <div>
+              <p className="text-[#C6FF3D] uppercase tracking-[0.25em] text-xs font-bold mb-1">
+                {activeCategory === 'all' ? '⚡ All Live Drops' : `${activeCategory.toUpperCase()} COLLECTION`}
+              </p>
+              <h2 className="font-display text-3xl sm:text-4xl text-white uppercase tracking-tight">
+                {activeCategory === 'all' && 'Latest Streetwear Curations'}
+                {activeCategory === 'men' && "Men's T-Shirts & Hoodies"}
+                {activeCategory === 'women' && "Women's Streetwear & Tops"}
+                {activeCategory === 'kids' && "Kids' Tees & Hoodies"}
+                {activeCategory === 'hoodie' && "Winter Heavyweight Hoodies"}
+              </h2>
+            </div>
+            {activeCategory !== 'all' && (
+              <button
+                onClick={() => selectCategory('all', false)}
+                className="text-xs text-gray-400 hover:text-[#C6FF3D] font-bold uppercase tracking-wider flex items-center gap-1.5 self-start md:self-center bg-white/5 hover:bg-white/10 px-4 py-2 rounded-full border border-white/10 transition-all cursor-pointer"
+              >
+                <span>✕</span> View All Drops
+              </button>
+            )}
+          </div>
+        )}
+
         {activeCategory !== 'gifts' && (
           <div className="mb-10 flex flex-wrap items-center justify-between gap-4 bg-white/5 p-4 rounded-2xl border border-white/10">
             <div className="flex flex-wrap items-center gap-2">
               <span className="text-xs uppercase tracking-wider text-gray-400 font-bold mr-2">Filter By:</span>
-              {[
-                { id: 'all', label: 'All Styles' },
-                { id: 'graphic', label: 'Graphic Tees' },
-                { id: 'oversized', label: 'Oversized' },
-                { id: 'plain', label: 'Essential Plain' },
-                { id: 'polo', label: 'Polos' },
-                { id: 'zipper', label: 'Zip-Up' },
-                { id: 'pullover', label: 'Pullover' },
-                { id: 'under999', label: '🏷️ Under ₹999' },
-              ].map((sub) => (
+              {getSubfiltersForCategory(activeCategory).map((sub) => (
                 <button
                   key={sub.id}
                   onClick={() => setActiveSubFilter(sub.id)}
                   className={`px-3.5 py-1.5 rounded-lg text-xs font-bold uppercase tracking-wider transition-all ${
                     activeSubFilter === sub.id
-                      ? 'bg-[#C6FF3D] text-black'
+                      ? 'bg-[#C6FF3D] text-black shadow-md shadow-[#C6FF3D]/20'
                       : 'bg-white/5 text-gray-400 hover:text-white hover:bg-white/10 border border-white/5'
                   }`}
                 >
@@ -1675,10 +1794,10 @@ export default function UnifiedNoviqueApp() {
           <div>
             <h4 className="text-white font-bold text-xs uppercase tracking-widest mb-4">Quick Navigation</h4>
             <ul className="space-y-2 text-xs text-gray-400">
-              <li><button onClick={() => { setActiveCategory('men'); setActiveSubFilter('all'); }} className="hover:text-[#C6FF3D]">Men's Collection</button></li>
-              <li><button onClick={() => { setActiveCategory('women'); setActiveSubFilter('all'); }} className="hover:text-[#C6FF3D]">Women's Collection</button></li>
-              <li><button onClick={() => { setActiveCategory('kids'); setActiveSubFilter('all'); }} className="hover:text-[#C6FF3D]">Kids' Drip</button></li>
-              <li><button onClick={() => setActiveCategory('gifts')} className="hover:text-[#C6FF3D]">Gifting Solutions 🎁</button></li>
+              <li><button onClick={() => selectCategory('men')} className="hover:text-[#C6FF3D] transition-colors">Men's Collection</button></li>
+              <li><button onClick={() => selectCategory('women')} className="hover:text-[#C6FF3D] transition-colors">Women's Collection</button></li>
+              <li><button onClick={() => selectCategory('kids')} className="hover:text-[#C6FF3D] transition-colors">Kids' Drip</button></li>
+              <li><button onClick={() => selectCategory('gifts')} className="hover:text-[#C6FF3D] transition-colors">Gifting Solutions 🎁</button></li>
             </ul>
           </div>
 
