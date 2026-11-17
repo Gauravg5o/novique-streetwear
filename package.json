@@ -4,7 +4,8 @@
   "private": true,
   "scripts": {
     "dev": "next dev",
-    "build": "next build --webpack",
+    "build": "opennextjs-cloudflare build",
+    "build:next": "next build --webpack",
     "start": "next start"
   },
   "dependencies": {
@@ -16,8 +17,10 @@
     "uuid": "^11.1.1"
   },
   "devDependencies": {
+    "@opennextjs/cloudflare": "^1.20.17",
     "autoprefixer": "^10.0.1",
     "postcss": "^8",
-    "tailwindcss": "^3.4.0"
+    "tailwindcss": "^3.4.0",
+    "wrangler": "^4.164.0"
   }
 }
