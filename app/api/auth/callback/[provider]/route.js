@@ -39,6 +39,47 @@ export async function GET(request, context) {
       }
     }
 
+    // 2. Discord OAuth Token Exchange
+    if (provider === 'discord' && code && process.env.DISCORD_CLIENT_ID && process.env.DISCORD_CLIENT_SECRET) {
+      const tokenRes = await fetch('https://discord.com/api/oauth2/token', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+        body: new URLSearchParams({
+          client_id: process.env.DISCORD_CLIENT_ID,
+          client_secret: process.env.DISCORD_CLIENT_SECRET,
+          grant_type: 'authorization_code',
+          code,
+          redirect_uri: `${siteUrl}/api/auth/callback/discord`,
+        }),
+      });
+      const tokens = await tokenRes.json();
+      if (tokens.access_token) {
+        const userRes = await fetch('https://discord.com/api/users/@me', {
+          headers: { Authorization: `Bearer ${tokens.access_token}` },
+        });
+        const discordUser = await userRes.json();
+        profile.email = discordUser.email || `${discordUser.username}@discord.novique.in`;
+        profile.name = discordUser.global_name || discordUser.username;
+      }
+    }
+
+    // 3. Facebook OAuth Token Exchange
+    if (provider === 'facebook' && code && process.env.FACEBOOK_CLIENT_ID && process.env.FACEBOOK_CLIENT_SECRET) {
+      const tokenUrl = new URL('https://graph.facebook.com/v19.0/oauth/access_token');
+      tokenUrl.searchParams.set('client_id', process.env.FACEBOOK_CLIENT_ID);
+      tokenUrl.searchParams.set('client_secret', process.env.FACEBOOK_CLIENT_SECRET);
+      tokenUrl.searchParams.set('redirect_uri', `${siteUrl}/api/auth/callback/facebook`);
+      tokenUrl.searchParams.set('code', code);
+      const tokenRes = await fetch(tokenUrl.toString());
+      const tokens = await tokenRes.json();
+      if (tokens.access_token) {
+        const userRes = await fetch(`https://graph.facebook.com/me?fields=id,name,email&access_token=${tokens.access_token}`);
+        const fbUser = await userRes.json();
+        profile.email = fbUser.email || `fb_${fbUser.id}@facebook.novique.in`;
+        profile.name = fbUser.name;
+      }
+    }
+
     if (!profile.email) {
       profile.email = searchParams.get('email') || `oauth_${provider}_${Date.now()}@novique.in`;
       profile.name = searchParams.get('name') || `${provider.toUpperCase()} User`;
