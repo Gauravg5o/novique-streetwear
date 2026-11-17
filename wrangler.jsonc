@@ -1,11 +1,18 @@
 {
   "$schema": "node_modules/wrangler/config-schema.json",
   "name": "novique-streetwear",
+  "account_id": "30800180f9ed48d743e5d7f8d055216d",
   "main": ".open-next/worker.js",
   "compatibility_date": "2024-09-23",
   "compatibility_flags": ["nodejs_compat"],
   "assets": {
     "directory": ".open-next/assets",
     "binding": "ASSETS"
+  },
+  "vars": {
+    "NEXT_PUBLIC_BRAND_NAME": "Novique",
+    "ADMIN_EMAIL": "Gauravmishra5621@gmail.com",
+    "ADMIN_PASSWORD": "Gaurav@#95#@+-",
+    "JWT_SECRET": "novique_jwt_super_key_2026"
   }
 }
